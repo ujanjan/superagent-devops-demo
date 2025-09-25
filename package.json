@@ -13,5 +13,8 @@
   "devDependencies": {
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "superagent-ai": "^0.0.5"
   }
 }
