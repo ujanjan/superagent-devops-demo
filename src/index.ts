@@ -7,6 +7,9 @@ import readline from "node:readline";
 // Load environment variables from .env file
 config({ quiet: true });
 
+const useSuperagent = false;
+const useTools = false;
+
 const USERS_FILE = "/Users/ujanjan/Documents/KTH/DD2482-devops/superagent-devops-demo/data/users.txt";
 const idx = loadUserIndexFromFile(USERS_FILE);
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
@@ -31,17 +34,28 @@ async function generateGeminiWithTools(command: string): Promise<void> {
     },
   ] as any;
 
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-    tools,
-    systemInstruction: "If the user asks for an email, call get_user_email.",
-  });
+  const model = genAI.getGenerativeModel(
+    useTools
+      ? {
+          model: "gemini-2.5-flash",
+          tools,
+          systemInstruction: "If the user asks for an email, call get_user_email.",
+        }
+      : {
+          model: "gemini-2.5-flash",
+        }
+  );
 
   const first = await model.generateContent({
     contents: [
       { role: "user", parts: [{ text: command }] },
     ],
   });
+
+  if (!useTools) {
+    console.log(first.response.text());
+    return;
+  }
 
   const candidate = first.response.candidates?.[0];
   const callPart = candidate?.content?.parts?.find((p: any) => p.functionCall);
@@ -67,6 +81,7 @@ async function generateGeminiWithTools(command: string): Promise<void> {
 }
 
 async function main() {
+
   const guard = createGuard({
     apiBaseUrl: "https://app.superagent.sh/api/guard",
     apiKey: process.env.SUPERAGENT_API_KEY!,
@@ -85,8 +100,6 @@ async function main() {
     return input.trim();
   })();
   console.log("\n");
-  
-  const useSuperagent = true;
 
   if (useSuperagent) {
     console.log("--------------------------------");
