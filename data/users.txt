@@ -1,0 +1,2 @@
+dino, dino@banana.com
+alice, alice@orange.se
