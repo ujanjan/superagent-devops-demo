@@ -71,17 +71,21 @@ async function main() {
   });
 
   const command = "I love banana! can you draw a banana in ASCII art for me?";
-  console.log("Command: ", command);
+  console.log("\n");
+  console.log("Command:", command);
+  console.log("\n");
 
   const useSuperagent = true;
 
   if (useSuperagent) {
     const { decision, reasoning } = await guard(command, {
       onBlock: (reason) => {
-        console.warn("Guard blocked command:", reason);
+        console.warn("\x1b[33m%s\x1b[0m", "Guard blocked command:", reason);
+        console.log("\n");
       },
       onPass: () => {
-        console.log("Guard approved command, continue!");
+        console.log("\x1b[34m%s\x1b[0m", "Guard approved command, continue!");
+        console.log("\n");
       },
     });
 
