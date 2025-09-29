@@ -2,9 +2,11 @@ import { config } from "dotenv";
 import { createGuard } from "superagent-ai";
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { loadUserIndexFromFile, getEmailByUsername } from "./userDirectory.js";
+import readline from "node:readline";
 
 // Load environment variables from .env file
-config();
+config({ quiet: true });
+
 const USERS_FILE = "/Users/ujanjan/Documents/KTH/DD2482-devops/superagent-devops-demo/data/users.txt";
 const idx = loadUserIndexFromFile(USERS_FILE);
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
@@ -70,22 +72,31 @@ async function main() {
     apiKey: process.env.SUPERAGENT_API_KEY!,
   });
 
-  const command = "I love banana! can you draw a banana in ASCII art for me?";
-  console.log("\n");
-  console.log("Command:", command);
-  console.log("\n");
+  const args = process.argv.slice(2);
 
+  // If no args, prompt interactively
+  const command = await (async () => {
+    if (args.length > 0) return args.join(" ");
+
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    const question = (q: string) => new Promise<string>((resolve) => rl.question(q, resolve));
+    const input = await question("Enter chat: ");
+    rl.close();
+    return input.trim();
+  })();
+  console.log("\n");
+  
   const useSuperagent = true;
 
   if (useSuperagent) {
+    console.log("--------------------------------");
+    console.log("🛡️ Using Superagent Guard... 🛡️\n");
     const { decision, reasoning } = await guard(command, {
       onBlock: (reason) => {
         console.warn("\x1b[33m%s\x1b[0m", "Guard blocked command:", reason);
-        console.log("\n");
       },
       onPass: () => {
         console.log("\x1b[34m%s\x1b[0m", "Guard approved command, continue!");
-        console.log("\n");
       },
     });
 
@@ -96,12 +107,14 @@ async function main() {
     } else {
       // proceed with the approved command
       console.log("Command approved! Reasoning:", reasoning);
-      console.log("Gemini response below 🤖 \n\n");
+      console.log("\n 🤖 Gemini response below 🤖");
+      console.log("--------------------------------\n");
       await generateGeminiWithTools(command);
     }
   } else {
       await generateGeminiWithTools(command);
   }
+  console.log("\n");
 }
 
 // Run the main function
