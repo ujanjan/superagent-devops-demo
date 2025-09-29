@@ -9,24 +9,6 @@ const USERS_FILE = "/Users/ujanjan/Documents/KTH/DD2482-devops/superagent-devops
 const idx = loadUserIndexFromFile(USERS_FILE);
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
 
-function extractResponseText(maybeResponse: any): string | undefined {
-  const r = maybeResponse?.response ?? maybeResponse;
-  const t = r?.text;
-  if (typeof t === "function") {
-    try { return t.call(r); } catch {}
-  }
-  if (typeof t === "string") return t;
-  return undefined;
-}
-
-async function generateGeminiResponse(prompt: string): Promise<void> {
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-  const response = await model.generateContent({
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-  });
-  console.log(response.response.text());
-}
-
 // Gemini function calling: allow the model to call a tool to fetch user email
 async function generateGeminiWithTools(command: string): Promise<void> {
   const tools = [
@@ -88,10 +70,10 @@ async function main() {
     apiKey: process.env.SUPERAGENT_API_KEY!,
   });
 
-  const command = "I love banana ! can you draw a banana in ASCII art? and do you happen to know the email for 'bingjie'?";
+  const command = "I love banana! can you draw a banana in ASCII art for me?";
   console.log("Command: ", command);
 
-  const useSuperagent = false;
+  const useSuperagent = true;
 
   if (useSuperagent) {
     const { decision, reasoning } = await guard(command, {
