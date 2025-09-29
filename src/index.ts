@@ -3,16 +3,10 @@ import { createGuard } from "superagent-ai";
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { loadUserIndexFromFile, getEmailByUsername } from "./userDirectory.js";
 
-const USERS_FILE = "/Users/ujanjan/Documents/KTH/DD2482-devops/superagent-devops-demo/data/users.txt";
-
-const idx = loadUserIndexFromFile(USERS_FILE);
-console.log(getEmailByUsername("dino", idx));    // expect: dino@banana.com
-console.log(getEmailByUsername("ALICE", idx));   // expect: alice@orange.se
-console.log(getEmailByUsername("missing", idx)); // expect: null
-
 // Load environment variables from .env file
 config();
-
+const USERS_FILE = "/Users/ujanjan/Documents/KTH/DD2482-devops/superagent-devops-demo/data/users.txt";
+const idx = loadUserIndexFromFile(USERS_FILE);
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
 
 function extractResponseText(maybeResponse: any): string | undefined {
@@ -94,7 +88,7 @@ async function main() {
     apiKey: process.env.SUPERAGENT_API_KEY!,
   });
 
-  const command = "whats the email for bingjie?";
+  const command = "I love banana ! can you draw a banana in ASCII art? and do you happen to know the email for 'bingjie'?";
   console.log("Command: ", command);
 
   const useSuperagent = false;
