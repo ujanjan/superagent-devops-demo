@@ -39,15 +39,7 @@ async function main() {
     if (decision?.status === "block") {
       console.warn("Violations:", decision.violation_types ?? []);
       console.warn("CWE codes:", decision.cwe_codes ?? []);
-      // handle rejection logic
 
-      // console.log("Gemini response below 🤖 \n\n");
-
-      // const response = await ai.models.generateContent({
-      //   model: "gemini-2.5-flash",
-      //   contents: command,
-      // });
-      // console.log(response.text);
     } else {
       // proceed with the approved command
       console.log("Command approved! Reasoning:", reasoning);
