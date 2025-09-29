@@ -8,7 +8,10 @@ import readline from "node:readline";
 config({ quiet: true });
 
 const useSuperagent = false;
-const useTools = false;
+const useTools = true;
+console.log("useSuperagent:", useSuperagent);
+console.log("useTools:", useTools);
+console.log("\n");
 
 const USERS_FILE = "/Users/ujanjan/Documents/KTH/DD2482-devops/superagent-devops-demo/data/users.txt";
 const idx = loadUserIndexFromFile(USERS_FILE);
@@ -37,12 +40,12 @@ async function generateGeminiWithTools(command: string): Promise<void> {
   const model = genAI.getGenerativeModel(
     useTools
       ? {
-          model: "gemini-2.5-flash",
+          model: "gemini-2.0-flash-lite",
           tools,
           systemInstruction: "If the user asks for an email, call get_user_email.",
         }
       : {
-          model: "gemini-2.5-flash",
+          model: "gemini-2.0-flash-lite",
         }
   );
 
@@ -116,6 +119,7 @@ async function main() {
     if (decision?.status === "block") {
       console.warn("Violations:", decision.violation_types ?? []);
       console.warn("CWE codes:", decision.cwe_codes ?? []);
+      console.log("--------------------------------\n");
 
     } else {
       // proceed with the approved command
