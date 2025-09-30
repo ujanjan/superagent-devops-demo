@@ -1,0 +1,4 @@
+dino, dino@banana.com
+alice, alice@orange.se
+fauzan, fauzan@helmi.com
+bingjie, bingjie@company.se
